@@ -1,0 +1,34 @@
+import CoreData
+struct PersistenceController {
+    //
+    static  let shared = PersistenceController()
+    
+    let container : NSPersistentContainer
+    
+    
+    //init
+    init(inMemory : Bool = false) {
+        //initialize the container with your app name -> AppDatabase
+        container = NSPersistentContainer(name:"BudgetDB")
+        
+        // container = NSPersistentCloudKitContainer(name: <#T##String#>)
+        if inMemory{
+            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+        }
+        
+        container.loadPersistentStores{_, error in
+            if let error  = error as NSError? {
+                fatalError("Unresolved Error: \(error), \(error.userInfo)")
+            }
+        }
+        
+        
+    }
+    
+    func saveContext(){
+        let context = container.viewContext
+        if context.hasChanges{
+            try? context.save()
+        }
+    }
+}
